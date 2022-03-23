@@ -1,4 +1,4 @@
-﻿namespace EstudoLinq_1.Models;
+﻿namespace MyAnimeList.Models;
 
 public class AnimeScore
 {

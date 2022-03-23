@@ -1,5 +1,4 @@
-﻿namespace EstudoLinq_1.Models;
-
+﻿namespace MyAnimeList.Models;
 public class RatingFromComplete
 {
     public int Id { get; set; }
