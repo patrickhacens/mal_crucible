@@ -1,5 +1,10 @@
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using MyAnimeList.Domain;
+using MyAnimeList.Domain.CsvDomain;
+using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 //builder.Configuration.AddJsonFile("appsettings.Development.json",true,true);
@@ -10,15 +15,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
-
-
 builder.Services
     .AddDbContext<MyAnimeListContext>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
