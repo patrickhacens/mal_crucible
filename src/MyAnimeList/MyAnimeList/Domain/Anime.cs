@@ -1,4 +1,4 @@
-﻿namespace MyAnimeList.Models;
+﻿namespace MyAnimeList.Domain;
 
 public class Anime
 {

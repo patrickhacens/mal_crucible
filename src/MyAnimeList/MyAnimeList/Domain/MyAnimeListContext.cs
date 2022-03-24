@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace MyAnimeList.Models;
+namespace MyAnimeList.Domain;
 
 public class MyAnimeListContext : DbContext
 {
@@ -13,7 +13,7 @@ public class MyAnimeListContext : DbContext
     public DbSet<Anime> Animes { get; set; }    
     public DbSet<AnimeScore> AnimeScores { get; set; }
     public DbSet<AnimeWithSynopsis> AnimesWithSynopsis { get; set; }
-    public DbSet<RatingFromComplete> RatingFromCompletes { get; set; }  
-    public DbSet<WatchStatus> WatchStatuses { get; set; }
+    public DbSet<RatingFromComplete> RatingCompletes { get; set; }  
+    public DbSet<WatchStatus> WatchStatus { get; set; }
   
 }
