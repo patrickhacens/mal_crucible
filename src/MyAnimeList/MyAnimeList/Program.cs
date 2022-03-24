@@ -1,18 +1,35 @@
+using MediatR;
+using Nudes.Retornator.AspnetCore;
+using System.Reflection;
+using FluentValidation;
+using System.Linq.Expressions;
+using Mapster;
+using MyAnimeList.PipelineBehaviors;
 using Microsoft.EntityFrameworkCore;
 using MyAnimeList.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
+
 //builder.Configuration.AddJsonFile("appsettings.Development.json",true,true);
+
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Configuration.AddJsonFile("appsettings.local.json", true, true);
+builder.Services.AddControllers().AddRetornator();
+builder.Services.AddErrorTranslator(ErrorHttpTranslatorBuilder.Default);
+builder.Services.AddMediatR(Assembly.GetEntryAssembly());
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddValidatorsFromAssembly(Assembly.GetEntryAssembly());
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Cors
+builder.Services.AddCors(options => options.AddPolicy("AllowAny", builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 
-
-
+TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
+TypeAdapterConfig.GlobalSettings.Compiler = exp => exp.CompileWithDebugInfo();
 
 builder.Services
     .AddDbContext<MyAnimeListContext>(options => options.UseSqlServer(
@@ -26,6 +43,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAny");
 
 app.UseHttpsRedirection();
 
