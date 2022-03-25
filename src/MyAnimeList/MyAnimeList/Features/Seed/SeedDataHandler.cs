@@ -32,11 +32,11 @@ public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
 
             _context.AddRange(records.Select(anime => new AnimeScore
             {
-                animeid = anime.anime_id,
-                score = anime.rating,
-                watched_episodes = anime.watched_episodes,
-                watching_status = anime.watching_status,
-                userid = anime.user_id
+                MyAnimeListId = anime.anime_id,
+                Score = anime.rating,
+                WatchedEpisodes = anime.watched_episodes,
+                WatchingStatus = anime.watching_status,
+                UserId = anime.user_id
             }));
         }
         await _context.SaveChangesAsync(cancellationToken);
