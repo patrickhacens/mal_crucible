@@ -4,7 +4,7 @@ public class AnimeWithSynopsis
 {
     public int Id { get; set; }
     public int MyAnimeListId { get; set; }
-    public decimal Score { get; set; }  
-    public string genres { get; set; }  
-    public string synopsis { get; set; }
+    public double Score { get; set; }  
+    public string Genres { get; set; }  
+    public string Synopsis { get; set; }
 }

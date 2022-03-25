@@ -2,7 +2,8 @@
 public class RatingFromComplete
 {
     public int Id { get; set; }
-    public int anime_id { get; set; }
-    public decimal rating { get; set; } 
+    public int UserId { get; set; }
+    public int MyAnimeListId { get; set; }
+    public decimal Rating { get; set; } 
 
 }
