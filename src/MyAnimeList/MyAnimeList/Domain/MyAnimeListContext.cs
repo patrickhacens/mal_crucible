@@ -30,11 +30,11 @@ public class MyAnimeListContext : DbContext
             int counter = 1;
             modelBuilder.Entity<AnimeScore>().HasData(records.Select(a => new AnimeScore {
                 Id = counter++,
-                animeid = a.anime_id,
-                score = a.rating,
-                watching_status = a.watching_status,
-                watched_episodes = a.watched_episodes,
-                userid = a.user_id
+                MyAnimeListId = a.anime_id,
+                Score = a.rating,
+                WatchingStatus = a.watching_status,
+                WatchedEpisodes = a.watched_episodes,
+                UserId = a.user_id
             }));
         }
         
