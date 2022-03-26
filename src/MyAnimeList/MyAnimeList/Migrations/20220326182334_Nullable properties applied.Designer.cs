@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyAnimeList.Domain;
 
@@ -11,9 +12,10 @@ using MyAnimeList.Domain;
 namespace MyAnimeList.Migrations
 {
     [DbContext(typeof(MyAnimeListContext))]
-    partial class MyAnimeListContextModelSnapshot : ModelSnapshot
+    [Migration("20220326182334_Nullable properties applied")]
+    partial class Nullablepropertiesapplied
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,7 +71,7 @@ namespace MyAnimeList.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OnHold")
+                    b.Property<int?>("Onhold")
                         .HasColumnType("int");
 
                     b.Property<int?>("PlanToWatch")

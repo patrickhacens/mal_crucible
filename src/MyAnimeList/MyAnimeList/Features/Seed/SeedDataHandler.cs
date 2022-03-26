@@ -8,6 +8,7 @@ using Nudes.Retornator.Core;
 using System.Text;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Mapster;
 
 namespace MyAnimeList.Features.Seed;
 
@@ -39,21 +40,19 @@ public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
                 UserId = anime.user_id
             }));
         }
-        await _context.SaveChangesAsync(cancellationToken);
         #endregion
 
         #region Animes
         _context.RemoveRange(_context.Animes.Select(a => a));
-        using (var reader = new StreamReader("RawData\\anime.csv",Encoding.UTF8))
-            using (var csv = new CsvReader(reader, config))
+        using (var reader = new StreamReader("RawData\\anime.csv", Encoding.UTF8))
+        using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AnimeMap>();
             IEnumerable<animeraw> records = csv.GetRecords<animeraw>();
-            foreach (var animeraw in records)
-            {
-                Console.WriteLine(animeraw.Japanese_name);
-            }
+            _context.AddRange(records.Adapt<IEnumerable<Anime>>());
+
         }
+        await _context.SaveChangesAsync(cancellationToken);
         #endregion
 
 
