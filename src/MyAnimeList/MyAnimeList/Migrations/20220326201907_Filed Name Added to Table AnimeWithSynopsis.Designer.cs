@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyAnimeList.Domain;
 
@@ -11,9 +12,10 @@ using MyAnimeList.Domain;
 namespace MyAnimeList.Migrations
 {
     [DbContext(typeof(MyAnimeListContext))]
-    partial class MyAnimeListContextModelSnapshot : ModelSnapshot
+    [Migration("20220326201907_Filed Name Added to Table AnimeWithSynopsis")]
+    partial class FiledNameAddedtoTableAnimeWithSynopsis
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,8 +187,8 @@ namespace MyAnimeList.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("Score")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("Score")
+                        .HasColumnType("float");
 
                     b.Property<string>("Synopsis")
                         .HasColumnType("nvarchar(max)");
@@ -207,7 +209,7 @@ namespace MyAnimeList.Migrations
                     b.Property<int>("MyAnimeListId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Rating")
+                    b.Property<decimal>("Rating")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("UserId")
@@ -221,7 +223,10 @@ namespace MyAnimeList.Migrations
             modelBuilder.Entity("MyAnimeList.Domain.WatchStatus", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");

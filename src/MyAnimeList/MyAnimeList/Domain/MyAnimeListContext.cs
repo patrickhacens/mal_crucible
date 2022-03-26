@@ -17,11 +17,15 @@ public class MyAnimeListContext : DbContext
     public DbSet<AnimeScore> AnimeScores { get; set; }
     public DbSet<AnimeWithSynopsis> AnimesWithSynopsis { get; set; }
     public DbSet<RatingFromComplete> RatingCompletes { get; set; }  
+    
     public DbSet<WatchStatus> WatchStatus { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
+        modelBuilder.Entity<WatchStatus>()
+            .Property(a => a.Id)
+            .ValueGeneratedNever();
+            
     }
     
 }

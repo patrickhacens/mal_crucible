@@ -52,14 +52,44 @@ public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
             _context.AddRange(records.Adapt<IEnumerable<Anime>>());
 
         }
-        await _context.SaveChangesAsync(cancellationToken);
         #endregion
 
+        #region AnimeWithSynopsis
+        _context.RemoveRange(_context.AnimesWithSynopsis.Select(a => a));
+        using (var reader = new StreamReader("RawData\\anime_with_synopsis.csv", Encoding.UTF8))
+        using (var csv = new CsvReader(reader, config))
+        {
+            csv.Context.RegisterClassMap<AnimeWithSynopsisMap>();
+            IEnumerable<AnimeWithSynopsisCsv> records = csv.GetRecords<AnimeWithSynopsisCsv>();
+            _context.AddRange(records.Adapt<IEnumerable<AnimeWithSynopsis>>());
+        }
+        #endregion
+
+        #region RatingFromComplete
+        _context.RemoveRange(_context.RatingCompletes.Select(a => a));
+        using (var reader = new StreamReader("RawData\\rating_complete.csv", Encoding.UTF8))
+        using (var csv = new CsvReader(reader, config))
+        {
+            csv.Context.RegisterClassMap<RatingFromCompleteMap>();
+            IEnumerable<RatingFromCompleteCsv> records = csv.GetRecords<RatingFromCompleteCsv>();
+            _context.AddRange(records.Adapt<IEnumerable<RatingFromComplete>>());
+        }
+        #endregion
+
+        #region WatchStatus
+        _context.RemoveRange(_context.WatchStatus.Select(a => a));
+        using (var reader = new StreamReader("RawData\\watching_status.csv"))
+        using (var csv = new CsvReader(reader, config))
+        {
+            csv.Context.RegisterClassMap<WatchStatusMap>();
+            IEnumerable<WatchStatusCsv> records = csv.GetRecords<WatchStatusCsv>();
+            _context.AddRange(records.Adapt<IEnumerable<WatchStatus>>());
+        }
+        #endregion
+
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
-
-
-
     }
 
 }
