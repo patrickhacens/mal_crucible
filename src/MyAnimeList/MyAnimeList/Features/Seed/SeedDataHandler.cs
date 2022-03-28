@@ -26,7 +26,7 @@ public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
 
         #region AnimeScores
         _context.RemoveRange(_context.AnimeScores.Select(a => a));
-        using (var reader = new StreamReader("RawData\\animelist.csv", Encoding.UTF8))
+        using (var reader = new StreamReader("..\\..\\..\\RawData\\animelist.csv", Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             IEnumerable<animelist> records = csv.GetRecords<animelist>();
@@ -44,7 +44,7 @@ public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
 
         #region Animes
         _context.RemoveRange(_context.Animes.Select(a => a));
-        using (var reader = new StreamReader("RawData\\anime.csv", Encoding.UTF8))
+        using (var reader = new StreamReader("..\\..\\..\\RawData\\anime.csv", Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AnimeMap>();
@@ -56,7 +56,7 @@ public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
 
         #region AnimeWithSynopsis
         _context.RemoveRange(_context.AnimesWithSynopsis.Select(a => a));
-        using (var reader = new StreamReader("RawData\\anime_with_synopsis.csv", Encoding.UTF8))
+        using (var reader = new StreamReader("..\\..\\..\\RawData\\anime_with_synopsis.csv", Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AnimeWithSynopsisMap>();
@@ -67,7 +67,7 @@ public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
 
         #region RatingFromComplete
         _context.RemoveRange(_context.RatingCompletes.Select(a => a));
-        using (var reader = new StreamReader("RawData\\rating_complete.csv", Encoding.UTF8))
+        using (var reader = new StreamReader("..\\..\\..\\RawData\\rating_complete.csv", Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<RatingFromCompleteMap>();
@@ -78,7 +78,7 @@ public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
 
         #region WatchStatus
         _context.RemoveRange(_context.WatchStatus.Select(a => a));
-        using (var reader = new StreamReader("RawData\\watching_status.csv"))
+        using (var reader = new StreamReader("..\\..\\..\\RawData\\watching_status.csv"))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<WatchStatusMap>();
