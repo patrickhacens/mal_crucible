@@ -6,4 +6,5 @@ namespace MyAnimeList.Features.Import;
 
 public class ImportDataRequest : IRequest<ResultOf<bool>>
 {
+    public string PathToRawFolder { get; set; }
 }

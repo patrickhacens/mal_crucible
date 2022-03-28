@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace MyAnimeList.Domain.CsvDomain;
 
-public class animeraw
+public class AnimeRaw
 {
     public int MyAnimeListId { get; set; }
     public string Name { get; set; }
@@ -44,7 +44,7 @@ public class animeraw
     public decimal? Score01 { get; set; }
 }
 
-public sealed class AnimeMap : ClassMap<animeraw>
+public sealed class AnimeMap : ClassMap<AnimeRaw>
 {
     public AnimeMap()
     {

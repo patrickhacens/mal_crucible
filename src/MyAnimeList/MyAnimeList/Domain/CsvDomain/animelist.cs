@@ -1,6 +1,6 @@
 ﻿namespace MyAnimeList.Domain.CsvDomain;
 
-public class animelist
+public class AnimeList
 {
     public int user_id { get; set; }
     public int anime_id { get; set; }   
