@@ -28,14 +28,14 @@ public class Anime
     public int? OnHold { get; set; }
     public int? Dropped { get; set; }    
     public int? PlanToWatch { get; set; }
-    public decimal? Score10 { get; set; }    
-    public decimal? Score09 { get; set; }
-    public decimal? Score08 { get; set; }
-    public decimal? Score07 { get; set; }    
-    public decimal? Score06 { get; set; }
-    public decimal? Score05 { get; set; }
-    public decimal? Score04 { get; set; }
-    public decimal? Score03 { get; set; }
-    public decimal? Score02 { get; set; }
-    public decimal? Score01 { get; set; }
+    public double? Score10 { get; set; }    
+    public double? Score09 { get; set; }
+    public double? Score08 { get; set; }
+    public double? Score07 { get; set; }    
+    public double? Score06 { get; set; }
+    public double? Score05 { get; set; }
+    public double? Score04 { get; set; }
+    public double? Score03 { get; set; }
+    public double? Score02 { get; set; }
+    public double? Score01 { get; set; }
 }
