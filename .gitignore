@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+#Raw CSV Files
+RawData/
+
 # User-specific files
 *.rsuser
 *.suo
@@ -348,3 +351,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# appsettings
+src/MyAnimeList/MyAnimeList/appsettings.local.json
