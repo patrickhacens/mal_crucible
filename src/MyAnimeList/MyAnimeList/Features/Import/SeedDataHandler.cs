@@ -10,17 +10,17 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Mapster;
 
-namespace MyAnimeList.Features.Seed;
+namespace MyAnimeList.Features.Import;
 
-public class SeedDataHandler : IRequestHandler<SeedDataRequest, ResultOf<bool>>
+public class ImportDataHandler : IRequestHandler<ImportDataRequest, ResultOf<bool>>
 {
     private readonly MyAnimeListContext _context;
-    public SeedDataHandler(MyAnimeListContext context)
+    public ImportDataHandler(MyAnimeListContext context)
     {
         _context = context;
     }
 
-    public async Task<ResultOf<bool>> Handle(SeedDataRequest request, CancellationToken cancellationToken)
+    public async Task<ResultOf<bool>> Handle(ImportDataRequest request, CancellationToken cancellationToken)
     {
         var config = new CsvConfiguration(new System.Globalization.CultureInfo("en-US")) { Delimiter = "," };
 
