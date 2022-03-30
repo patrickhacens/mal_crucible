@@ -1,11 +1,6 @@
-﻿using FluentValidation;
-
-namespace MyAnimeList.Features.QtdStudioPeriod;
-
-public class QtdStudioPeriodValidator : AbstractValidator<QtdStudioPeriodRequest>
+﻿namespace MyAnimeList.Features.QtdStudioPeriod
 {
-    public QtdStudioPeriodValidator()
+    public class QtdStudioPeriodValidator
     {
-        RuleFor(p => p).Must(p => (p.ano == 0) ||  (p.mes >= 0 && p.mes <= 12));
     }
 }

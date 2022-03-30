@@ -7,6 +7,6 @@ namespace MyAnimeList.Features.QtdStudioPeriod;
 
 public class QtdStudioPeriodRequest : PageRequest, IRequest<ResultOf<PageResult<AnimePerStudioPeriod>>>
 {
-    public int ano { get; set; }
-    public int mes { get; set; }
+    public int ano;
+    public int mes;
 }
