@@ -33,7 +33,7 @@ public class RankingAnimeHandle : IRequestHandler<RankingAnimeRequest, ResultOf<
 
 
         var total = await _context.AnimeScores.CountAsync(cancellationToken);
-        var itens = await records.PaginateByDescending(query, d => d.MyAnimeListId).ToListAsync(cancellationToken);
+        var itens = await records.PaginateByDescending(query, d => d.EstrelaIndex).ToListAsync(cancellationToken);
 
         
 
