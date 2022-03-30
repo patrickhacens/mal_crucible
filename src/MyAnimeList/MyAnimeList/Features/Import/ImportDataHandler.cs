@@ -10,7 +10,7 @@ using Mapster;
 
 namespace MyAnimeList.Features.Import;
 
-public class ImportDataHandler : IRequestHandler<ImportDataRequest, ResultOf<bool>>
+public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
 {
     private readonly MyAnimeListContext _context;
     public ImportDataHandler(MyAnimeListContext context)
@@ -18,7 +18,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, ResultOf<boo
         _context = context;
     }
 
-    public async Task<ResultOf<bool>> Handle(ImportDataRequest request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(ImportDataRequest request, CancellationToken cancellationToken)
     {
         var config = new CsvConfiguration(new System.Globalization.CultureInfo("en-US")) { Delimiter = "," };
 
@@ -100,7 +100,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, ResultOf<boo
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return true;
+        return Result.Success;
     }
 
 }
