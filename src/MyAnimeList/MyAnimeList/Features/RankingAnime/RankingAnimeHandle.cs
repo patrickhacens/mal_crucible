@@ -21,8 +21,8 @@ public class RankingAnimeHandle : IRequestHandler<RankingAnimeRequest, ResultOf<
     {
         var records = _context.AnimeScores.GroupBy(x => new { x.Score, x.MyAnimeListId }).Select(x => new
         {
-            MyAnimeListId = x.Key.MyAnimeListId,
-            Score = x.Key.Score,
+            x.Key.MyAnimeListId,
+            x.Key.Score,
             TotalScore = x.Count()
         }).GroupBy(x => x.MyAnimeListId).Select(x => new AnimeRanking
         {
