@@ -1,7 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyAnimeList.Domain;
+using MyAnimeList.DTO;
 using MyAnimeList.Features.Import;
+using MyAnimeList.Features.RankingAnime;
 using Nudes.Paginator.Core;
 using Nudes.Retornator.Core;
 
@@ -19,7 +22,12 @@ namespace MyAnimeList
 
         [HttpPost]
         [Route("import")]
-        public Task<ResultOf<bool>>Seed(ImportDataRequest request,CancellationToken cancellation)
+        public Task<ResultOf<bool>>Import(ImportDataRequest request,CancellationToken cancellation)
+            => _mediator.Send(request,cancellation);
+
+        [HttpGet]
+        [Route("ranking")]
+        public Task<ResultOf<PageResult<AnimeRanking>>> Ranking([FromQuery] RankingAnimeRequest request,CancellationToken cancellation)
             => _mediator.Send(request,cancellation);
             
     }
