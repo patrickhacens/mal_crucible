@@ -26,7 +26,7 @@ namespace MyAnimeList
             => _mediator.Send(request,cancellation);
 
         [HttpGet]
-        [Route("ranking")]
+        [Route("rank/index")]
         public Task<ResultOf<PageResult<AnimeRanking>>> Ranking([FromQuery] RankingAnimeRequest request,CancellationToken cancellation)
             => _mediator.Send(request,cancellation);
             
