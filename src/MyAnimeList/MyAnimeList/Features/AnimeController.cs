@@ -22,13 +22,10 @@ namespace MyAnimeList
 
         [HttpPost]
         [Route("import")]
-        public Task<ResultOf<bool>>Import(ImportDataRequest request,CancellationToken cancellation)
+        public Task<Result>Import(ImportDataRequest request,CancellationToken cancellation)
             => _mediator.Send(request,cancellation);
 
-        [HttpGet]
-        [Route("rank/index")]
-        public Task<ResultOf<PageResult<AnimeRanking>>> Ranking([FromQuery] RankingAnimeRequest request,CancellationToken cancellation)
-            => _mediator.Send(request,cancellation);
+
             
     }
 }
