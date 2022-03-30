@@ -27,13 +27,13 @@ public class RankingAnimeHandle : IRequestHandler<RankingAnimeRequest, ResultOf<
         }).GroupBy(x => x.MyAnimeListId).Select(x => new AnimeRanking
         {
             MyAnimeListId = x.Key,
-            EstrelaIndex = x.Sum(x => Math.Pow((double)(x.Score - 5), 3.0) * x.TotalScore) / 325,
+            EstrelaIndex =  x.Sum(x => Math.Pow(((double) x.Score - (double) 5), 3.0) * x.TotalScore) / 325.0,
             Anime = _context.Animes.Where(y => y.MyAnimeListId == x.Key).FirstOrDefault()
         });
 
 
-        var total = await _context.AnimeScores.CountAsync(cancellationToken);
-        var itens = await records.PaginateByDescending(query, d => d.EstrelaIndex).ToListAsync(cancellationToken);
+        var total = _context.AnimeScores.Count();
+        var itens = await records.PaginateByDescending(query, d => d.MyAnimeListId).ToListAsync(cancellationToken);
 
         
 
