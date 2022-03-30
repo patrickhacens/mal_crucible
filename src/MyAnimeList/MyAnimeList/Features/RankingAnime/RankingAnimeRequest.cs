@@ -8,6 +8,6 @@ namespace MyAnimeList.Features.RankingAnime;
 
 public class RankingAnimeRequest : PageRequest, IRequest<ResultOf<PageResult<AnimeRanking>>>
 {
-    public string teste { get; set; }
+    
 }
 
