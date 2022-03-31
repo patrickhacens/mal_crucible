@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using MyAnimeList.DTO;
+using MyAnimeList.Models;
 using Nudes.Paginator.Core;
 using Nudes.Retornator.Core;
 

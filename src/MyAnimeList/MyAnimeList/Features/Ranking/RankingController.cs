@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MyAnimeList.DTO;
+using MyAnimeList.Features.QtdStudioPeriod;
 using MyAnimeList.Features.Ranking.GeometricRank;
 using MyAnimeList.Features.RankingAnime;
 using MyAnimeList.Models;
@@ -31,5 +32,10 @@ namespace MyAnimeList.Features.Ranking
         [Route("/rank/index")]
         public Task<ResultOf<PageResult<AnimeRanking>>> Ranking([FromQuery] RankingAnimeRequest request, CancellationToken cancellation)
             => mediator.Send(request, cancellation);
+
+        [HttpGet]
+        [Route("/animes/studio/release")]
+        public Task<ResultOf<PageResult<AnimePerStudioPeriod>>> PerStudioPeriod([FromQuery] QtdStudioPeriodRequest request,CancellationToken cancellation)
+            => mediator.Send(request,cancellation);
     }
 }
