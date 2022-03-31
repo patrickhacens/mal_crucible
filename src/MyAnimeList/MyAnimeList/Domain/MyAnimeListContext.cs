@@ -20,6 +20,9 @@ public class MyAnimeListContext : DbContext
     
     public DbSet<WatchStatus> WatchStatus { get; set; }
 
+    public DbSet<AnimeGenres> AnimeGenres { get; set; }
+    public DbSet<Genre> Genres { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<WatchStatus>()

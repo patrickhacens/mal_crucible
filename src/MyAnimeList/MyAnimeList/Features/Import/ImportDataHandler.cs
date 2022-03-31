@@ -7,7 +7,6 @@ using Nudes.Retornator.Core;
 using System.Text;
 using Mapster;
 
-
 namespace MyAnimeList.Features.Import;
 
 public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
@@ -35,8 +34,18 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
             return new Nudes.Retornator.AspnetCore.Errors.NotFoundError();
         }
 
+        #region CleanDb
+        _context.AnimeScores.RemoveRange(_context.AnimeScores.Select(a => a));
+        _context.AnimeGenres.RemoveRange(_context.AnimeGenres.Select(a => a));
+        _context.Genres.RemoveRange( _context.Genres.Select(a => a));
+        _context.Animes.RemoveRange( _context.Animes.Select(a => a));
+        _context.AnimesWithSynopsis.RemoveRange( _context.AnimesWithSynopsis.Select(a => a));
+        _context.RatingCompletes.RemoveRange( _context.RatingCompletes.Select(a => a));
+        _context.WatchStatus.RemoveRange( _context.WatchStatus.Select(a => a));
+        await _context.SaveChangesAsync(cancellationToken);
+        #endregion
+
         #region AnimeScores
-        _context.RemoveRange(_context.AnimeScores.Select(a => a));
         using (var reader = new StreamReader(Path.Combine(path, "animelist.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
@@ -54,19 +63,54 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #endregion
 
         #region Animes
-        _context.RemoveRange(_context.Animes.Select(a => a));
         using (var reader = new StreamReader(Path.Combine(path,"anime.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AnimeMap>();
             IEnumerable<AnimeRaw> records = csv.GetRecords<AnimeRaw>();
-            _context.AddRange(records.Adapt<IEnumerable<Anime>>());
 
+            List<Genre> genres = new();
+
+            foreach (var record in records)
+            {
+                var anime = record.Adapt<Anime>();
+                _context.Animes.Add(anime);
+                if (record.Genres != null)
+                {
+                    foreach (string genreSplited in record.Genres.Split(',').Select(d => d.Trim()))
+                    {
+                        if(!genres.Any(g => g.Name == genreSplited))
+                        {
+                            var newGenre = new Genre() { Name = genreSplited };
+
+                            genres.Add(newGenre);
+
+                            _context.Genres.Add(newGenre);
+
+                            _context.AnimeGenres.Add(new AnimeGenres()
+                            {
+                                Genre = newGenre,
+                                Anime = anime
+                            });
+                        }
+
+                        else
+                        {
+                            var genre = genres.FirstOrDefault(g => g.Name == genreSplited);
+
+                            _context.AnimeGenres.Add(new AnimeGenres()
+                            {
+                                Genre = genre,
+                                Anime = anime
+                            });
+                        }
+                    }
+                }
+            }
         }
         #endregion
 
         #region AnimeWithSynopsis
-        _context.RemoveRange(_context.AnimesWithSynopsis.Select(a => a));
         using (var reader = new StreamReader(Path.Combine(path,"anime_with_synopsis.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
@@ -77,7 +121,6 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #endregion
 
         #region RatingFromComplete
-        _context.RemoveRange(_context.RatingCompletes.Select(a => a));
         using (var reader = new StreamReader(Path.Combine(path,"rating_complete.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
@@ -88,7 +131,6 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #endregion
 
         #region WatchStatus
-        _context.RemoveRange(_context.WatchStatus.Select(a => a));
         using (var reader = new StreamReader(Path.Combine(path, "watching_status.csv")))
         using (var csv = new CsvReader(reader, config))
         {
