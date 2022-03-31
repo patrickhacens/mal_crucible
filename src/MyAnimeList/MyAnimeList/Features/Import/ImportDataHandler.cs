@@ -104,6 +104,21 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
                 #endregion
 
 
+                #region InsertStudios
+                if (anime.Studios != null)
+                {
+                    string[] Studios = anime.Studios.Split(",");
+                    foreach (string Studio in Studios)
+                    {
+                        var studio = new Studio();
+                        studio.MyAnimeListId = anime.MyAnimeListId;
+                        studio.StudioName = Studio.Trim();
+                        _context.Studios.Add(studio);
+                    }
+                }
+                #endregion
+
+
 
 
 

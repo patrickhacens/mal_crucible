@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using Nudes.Retornator.Core;
 using Nudes.Paginator.Core;
-using MyAnimeList.DTO;
+using MyAnimeList.Models;
 using MyAnimeList.Domain;
 
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace MyAnimeList.Features.QtdStudioPeriod;
 
@@ -16,24 +17,28 @@ public class QtdStudioPeriodHandler : IRequestHandler<QtdStudioPeriodRequest, Re
         _context = context;
     }
 
-    public Task<ResultOf<PageResult<AnimePerStudioPeriod>>> Handle(QtdStudioPeriodRequest request, CancellationToken cancellationToken)
+    public async Task<ResultOf<PageResult<AnimePerStudioPeriod>>> Handle(QtdStudioPeriodRequest request, CancellationToken cancellationToken)
     {
 
-        var records = _context.Animes
-            .Where(a => Regex.IsMatch(a.Aired, @"(?i)^\s*(?<month>jan|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dec)[\.,\s]*\D*(?<day>\d{1,2}\D)[\.,\s]*\D*(?<year>\d{4})"))
-            .Select(a => new
-            {
-                date = Regex.Replace(a.Aired,
-            @"(?i)^\s*(?<month>jan|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dec)[\.,\s]*\D*(?<day>\d+)[\.,\s]*\D*(?<year>\d{4})",
-            @"Shimoo=${month} ${day}, ${year}")
-            });
-        foreach (var record in records)
+        var records = _context.Studios.Join(_context.Animes, a => a.MyAnimeListId, b => b.MyAnimeListId, (a, b) => new
         {
-            Console.WriteLine(record.date);
-        }
+            a.StudioName,
+            b.StartDateAired
+        })
+            .Where( a => !request.ano.HasValue ? true : (a.StartDateAired.HasValue && a.StartDateAired.Value.Year == request.ano) )
+            .GroupBy(a => a.StudioName).Select(a => new AnimePerStudioPeriod
+        {
+            Studio = a.Key,
+            QtdReleased = a.Count(),
+            anos = a.Min(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Year : 9999)).ToString() + " a " + a.Max(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Year : 0)).ToString(),
+        });
+
+        var total = await records.CountAsync(cancellationToken);
+        var items = await records.PaginateByDescending(request, d => d.QtdReleased).ToListAsync(cancellationToken);
 
 
-        return null;
+
+        return new PageResult<AnimePerStudioPeriod>(request, total, items);
 
 
 

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using MyAnimeList.Features.AnimesPerGenre;
 using MyAnimeList.Domain;
-using MyAnimeList.DTO;
 using MyAnimeList.Features.Import;
 using MyAnimeList.Models;
 using MyAnimeList.Features.RankingAnime;
@@ -42,7 +41,7 @@ namespace MyAnimeList
         [HttpGet]
         [Route("/animes/studio/releases")]
         public Task<ResultOf<PageResult<AnimePerStudioPeriod>>> AnimeStudioRelease([FromQuery] QtdStudioPeriodRequest request, CancellationToken cancellation)
-            => _mediator.Send(request,cancellation);
+            => _mediator.Send(request, cancellation);
 
 
     }
