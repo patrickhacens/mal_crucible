@@ -1,4 +1,4 @@
-﻿namespace MyAnimeList.Models;
+﻿namespace MyAnimeList.DTO;
 
 public class AnimePerStudioPeriod
 {
