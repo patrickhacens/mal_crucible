@@ -9,13 +9,8 @@ using MyAnimeList.Features.Import;
 using MyAnimeList.Models;
 using MyAnimeList.Features.RankingAnime;
 
+using MyAnimeList.Features.Import;
 
-using MyAnimeList.Features.QtdStudioPeriod;
-<<<<<<< HEAD
->>>>>>> Request, Handler and Validator prepared
-=======
-
->>>>>>> Fiels StartDate and EndDate inserted on table Animes
 using Nudes.Paginator.Core;
 using Nudes.Retornator.Core;
 
@@ -41,19 +36,5 @@ namespace MyAnimeList
         {
             return _mediator.Send(request, cancellationToken);
         }           
-
-
-        [HttpGet]
-        [Route("/animes/studio/releases")]
-        public Task<ResultOf<PageResult<AnimePerStudioPeriod>>> AnimeStudioRelease([FromQuery] QtdStudioPeriodRequest request, CancellationToken cancellation)
-            => _mediator.Send(request,cancellation);
-
-<<<<<<< HEAD
->>>>>>> Request, Handler and Validator prepared
-            
->>>>>>> Rebase da Issue5
-=======
-
->>>>>>> Fiels StartDate and EndDate inserted on table Animes
     }
 }
