@@ -6,7 +6,6 @@ public class Anime
     public int MyAnimeListId { get; set; }  
     public string Name { get; set; }
     public decimal? Score { get; set; }  
-    public string Genres { get; set; }
     public string EnglishName { get; set; } 
     public string JapaneseName { get; set; }    
     public string Type { get; set; }    
