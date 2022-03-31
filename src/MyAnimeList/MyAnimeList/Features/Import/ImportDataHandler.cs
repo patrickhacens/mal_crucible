@@ -6,6 +6,7 @@ using MyAnimeList.Domain.CsvDomain;
 using Nudes.Retornator.Core;
 using System.Text;
 using Mapster;
+using System.Text.RegularExpressions;
 
 namespace MyAnimeList.Features.Import;
 
@@ -25,8 +26,8 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         var path = request.PathToRawFolder;
 
 
-        if (!File.Exists(Path.Combine(request.PathToRawFolder,"animelist.csv"))
-            || !File.Exists(Path.Combine(request.PathToRawFolder,"anime.csv"))
+        if (!File.Exists(Path.Combine(request.PathToRawFolder, "animelist.csv"))
+            || !File.Exists(Path.Combine(request.PathToRawFolder, "anime.csv"))
             || !File.Exists(Path.Combine(request.PathToRawFolder, "anime_with_synopsis.csv"))
             || !File.Exists(Path.Combine(request.PathToRawFolder, "rating_complete.csv"))
             || !File.Exists(Path.Combine(request.PathToRawFolder, "watching_status.csv")))
@@ -37,11 +38,11 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #region CleanDb
         _context.AnimeScores.RemoveRange(_context.AnimeScores.Select(a => a));
         _context.AnimeGenres.RemoveRange(_context.AnimeGenres.Select(a => a));
-        _context.Genres.RemoveRange( _context.Genres.Select(a => a));
-        _context.Animes.RemoveRange( _context.Animes.Select(a => a));
-        _context.AnimesWithSynopsis.RemoveRange( _context.AnimesWithSynopsis.Select(a => a));
-        _context.RatingCompletes.RemoveRange( _context.RatingCompletes.Select(a => a));
-        _context.WatchStatus.RemoveRange( _context.WatchStatus.Select(a => a));
+        _context.Genres.RemoveRange(_context.Genres.Select(a => a));
+        _context.Animes.RemoveRange(_context.Animes.Select(a => a));
+        _context.AnimesWithSynopsis.RemoveRange(_context.AnimesWithSynopsis.Select(a => a));
+        _context.RatingCompletes.RemoveRange(_context.RatingCompletes.Select(a => a));
+        _context.WatchStatus.RemoveRange(_context.WatchStatus.Select(a => a));
         await _context.SaveChangesAsync(cancellationToken);
         #endregion
 
@@ -63,7 +64,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #endregion
 
         #region Animes
-        using (var reader = new StreamReader(Path.Combine(path,"anime.csv"), Encoding.UTF8))
+        using (var reader = new StreamReader(Path.Combine(path, "anime.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AnimeMap>();
@@ -74,12 +75,45 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
             foreach (var record in records)
             {
                 var anime = record.Adapt<Anime>();
+                #region GetAiredDates
+                if (anime.Aired != null)
+                {
+                    Match mDates = Regex.Match(anime.Aired, @"(?i)^\s*(?<month>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*[\.,\s]*\D*(?:(?<day>\d{1,2})\D)*[\.,\s]*\D*(?<year>\d{4})(?:\s*to\s*(?<monthto>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*[\.,\s]*(?:(?<dayto>\d{1,2})\D)*\D*(?<yearto>\d{4})*)*");
+                    String sDateFrom = (mDates.Groups["month"].Success ? mDates.Groups["month"].Value : "Jan") + " " +
+                                       (mDates.Groups["day"].Success ? mDates.Groups["day"].Value : "1") + ", " +
+                                       mDates.Groups["year"].Value;
+                    anime.StartDateAired = DateTime.Parse(sDateFrom, new System.Globalization.CultureInfo("en-US"));
+                    if (mDates.Groups["yearto"].Success)
+                    {
+                        String sDateTo = (mDates.Groups["monthto"].Success ? mDates.Groups["monthto"].Value : "Jan") + " " +
+                                       (mDates.Groups["dayto"].Success ? mDates.Groups["dayto"].Value : "1") + ", " +
+                                       mDates.Groups["yearto"].Value;
+                        anime.EndDateAired = DateTime.Parse(sDateTo, new System.Globalization.CultureInfo("en-US"));
+                    }
+                    else
+                    {
+                        anime.EndDateAired = null;
+                    }
+                }
+                else
+                {
+                    anime.StartDateAired = null;
+                    anime.EndDateAired = null;
+                }
+
+                #endregion
+
+
+
+
+
+
                 _context.Animes.Add(anime);
                 if (record.Genres != null)
                 {
                     foreach (string genreSplited in record.Genres.Split(',').Select(d => d.Trim()))
                     {
-                        if(!genres.Any(g => g.Name == genreSplited))
+                        if (!genres.Any(g => g.Name == genreSplited))
                         {
                             var newGenre = new Genre() { Name = genreSplited };
 
@@ -111,7 +145,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #endregion
 
         #region AnimeWithSynopsis
-        using (var reader = new StreamReader(Path.Combine(path,"anime_with_synopsis.csv"), Encoding.UTF8))
+        using (var reader = new StreamReader(Path.Combine(path, "anime_with_synopsis.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AnimeWithSynopsisMap>();
@@ -121,7 +155,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #endregion
 
         #region RatingFromComplete
-        using (var reader = new StreamReader(Path.Combine(path,"rating_complete.csv"), Encoding.UTF8))
+        using (var reader = new StreamReader(Path.Combine(path, "rating_complete.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<RatingFromCompleteMap>();

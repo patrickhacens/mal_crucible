@@ -11,6 +11,8 @@ public class Anime
     public string JapaneseName { get; set; }    
     public string Type { get; set; }    
     public int? Episodes { get; set; }   
+    public DateTime? StartDateAired { get; set; }
+    public DateTime? EndDateAired { get; set; }
     public string Aired { get; set; }   
     public string Premiered { get; set; }   
     public string Producers { get; set; }
