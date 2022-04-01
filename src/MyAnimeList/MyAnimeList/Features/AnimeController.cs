@@ -9,6 +9,7 @@ using MyAnimeList.Models;
 using MyAnimeList.Features.RankingAnime;
 using Nudes.Paginator.Core;
 using Nudes.Retornator.Core;
+using MyAnimeList.Features.EngagingPerAnime;
 
 namespace MyAnimeList
 {
@@ -31,6 +32,12 @@ namespace MyAnimeList
         public Task<ResultOf<List<AnimesPerGenresDTO>>> AnimesPerGenres([FromQuery]AnimesPerGenresRequest request, CancellationToken cancellationToken)
         {
             return _mediator.Send(request, cancellationToken);
-        }           
+        }
+
+        [HttpGet("/animes/engaging")]
+        public Task<ResultOf<PageResult<EngagingPerAnimeDTO>>> EngagingPerAnime([FromQuery] EngagingPerAnimeRequest request, CancellationToken cancellationToken)
+        {
+            return _mediator.Send(request, cancellationToken);
+        }
     }
 }
