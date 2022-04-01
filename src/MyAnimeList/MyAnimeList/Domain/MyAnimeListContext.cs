@@ -28,7 +28,13 @@ public class MyAnimeListContext : DbContext
         modelBuilder.Entity<WatchStatus>()
             .Property(a => a.Id)
             .ValueGeneratedNever();
-            
+
+        modelBuilder.Entity<Anime>()
+            .HasMany(d => d.AnimeScores)
+            .WithOne(d => d.Anime)
+            .HasForeignKey(d => d.MyAnimeListId)
+            .HasPrincipalKey(d => d.MyAnimeListId);
+
     }
     
 }
