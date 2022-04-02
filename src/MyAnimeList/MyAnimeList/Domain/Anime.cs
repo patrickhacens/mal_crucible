@@ -6,6 +6,7 @@ public class Anime
     public int MyAnimeListId { get; set; }  
     public string Name { get; set; }
     public decimal? Score { get; set; }  
+    public virtual List<AnimeGenres> AnimeGenres { get; set; }
     public string EnglishName { get; set; } 
     public string JapaneseName { get; set; }    
     public string Type { get; set; }    
@@ -37,6 +38,4 @@ public class Anime
     public double? Score03 { get; set; }
     public double? Score02 { get; set; }
     public double? Score01 { get; set; }
-    public virtual List<AnimeGenres> AnimeGenres { get; set; }
-    public virtual List<AnimeScore> AnimeScores { get; set; }
 }
