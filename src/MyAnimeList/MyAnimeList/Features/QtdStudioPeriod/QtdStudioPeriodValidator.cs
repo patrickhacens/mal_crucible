@@ -6,8 +6,7 @@ public class QtdStudioPeriodValidator : AbstractValidator<QtdStudioPeriodRequest
 {
     public QtdStudioPeriodValidator()
     {
-        //RuleFor(p => p).Must(p => (p.ano == 0) || (p.mes >= 0 && p.mes <= 12));
-
+        RuleFor(p => p).Must(p => (!p.Mes.HasValue) || p.Ano.HasValue);
     }﻿
 
 }

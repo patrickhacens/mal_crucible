@@ -73,23 +73,45 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
 
             List<Genre> genres = new();
 
+            var dateregex = new Regex(@"(?i)^\s*(?<month>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*[\.,\s]*\D*(?:(?<day>\d{1,2})\D)*[\.,\s]*\D*(?<year>\d{4})(?:\s*to\s*(?<monthto>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*[\.,\s]*(?:(?<dayto>\d{1,2})\D)*\D*(?<yearto>\d{4})*)*");
+            Dictionary<string, int> monthmap = new Dictionary<string, int>()
+                {
+                    {"jan", 1 },
+                    {"feb", 2 },
+                    {"mar", 3 },
+                    {"apr", 4 },
+                    {"may", 5 },
+                    {"jun", 6 },
+                    {"jul", 7 },
+                    {"aug", 8 },
+                    {"sep", 9 },
+                    {"oct", 10 },
+                    {"nov", 11 },
+                    {"dec", 12 }
+                };
+
+
+
             foreach (var record in records)
             {
                 var anime = record.Adapt<Anime>();
+
+
                 #region GetAiredDates
                 if (anime.Aired != null)
                 {
-                    Match mDates = Regex.Match(anime.Aired, @"(?i)^\s*(?<month>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*[\.,\s]*\D*(?:(?<day>\d{1,2})\D)*[\.,\s]*\D*(?<year>\d{4})(?:\s*to\s*(?<monthto>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*[\.,\s]*(?:(?<dayto>\d{1,2})\D)*\D*(?<yearto>\d{4})*)*");
-                    String sDateFrom = (mDates.Groups["month"].Success ? mDates.Groups["month"].Value : "Jan") + " " +
-                                       (mDates.Groups["day"].Success ? mDates.Groups["day"].Value : "1") + ", " +
-                                       mDates.Groups["year"].Value;
-                    anime.StartDateAired = DateTime.Parse(sDateFrom, new System.Globalization.CultureInfo("en-US"));
+                    Match mDates = dateregex.Match(anime.Aired);
+                    int month = monthmap[mDates.Groups["month"].Success ? mDates.Groups["month"].Value.ToLower() : "jan"];
+                    int day = mDates.Groups["day"].Success ? int.Parse(mDates.Groups["day"].Value) : 1;
+                    int year = int.Parse(mDates.Groups["year"].Value);
+                    anime.StartDateAired = new DateTime(year, month, day);
+
                     if (mDates.Groups["yearto"].Success)
                     {
-                        String sDateTo = (mDates.Groups["monthto"].Success ? mDates.Groups["monthto"].Value : "Jan") + " " +
-                                       (mDates.Groups["dayto"].Success ? mDates.Groups["dayto"].Value : "1") + ", " +
-                                       mDates.Groups["yearto"].Value;
-                        anime.EndDateAired = DateTime.Parse(sDateTo, new System.Globalization.CultureInfo("en-US"));
+                        int monthto = monthmap[mDates.Groups["monthto"].Success ? mDates.Groups["monthto"].Value.ToLower() : "jan"];
+                        int dayto = mDates.Groups["dayto"].Success ? int.Parse(mDates.Groups["dayto"].Value) : 1;
+                        int yearto = int.Parse(mDates.Groups["year"].Value);
+                        anime.EndDateAired = new DateTime(yearto, monthto, dayto);
                     }
                     else
                     {

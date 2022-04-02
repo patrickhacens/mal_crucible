@@ -24,15 +24,15 @@ public class QtdStudioPeriodHandler : IRequestHandler<QtdStudioPeriodRequest, Re
         {
             a.StudioName,
             b.StartDateAired
-        })
-            .Where( a => !request.ano.HasValue ? true : (a.StartDateAired.HasValue && a.StartDateAired.Value.Year == request.ano) )
-            .Where( a => !request.mes.HasValue ? true : (a.StartDateAired.HasValue && a.StartDateAired.Value.Month == request.mes))
+                                                                                                                                                                                       })
+            .Where( a => !request.Ano.HasValue ? true : (a.StartDateAired.HasValue && a.StartDateAired.Value.Year == request.Ano) )
+            .Where( a => !request.Mes.HasValue ? true : (a.StartDateAired.HasValue && a.StartDateAired.Value.Month == request.Mes))
             .GroupBy(a => a.StudioName).Select(a => new AnimePerStudioPeriod
         {
             Studio = a.Key,
             QtdReleased = a.Count(),
-            anos = a.Min(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Year : 9999)).ToString() + " a " + a.Max(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Year : 0)).ToString(),
-            meses = a.Min(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Month : 12)).ToString() + " a "+a.Max(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Month : 0)).ToString()
+            Anos = a.Min(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Year : 9999)).ToString() + " a " + a.Max(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Year : 0)).ToString(),
+            Meses = a.Min(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Month : 12)).ToString() + " a "+a.Max(a => (a.StartDateAired.HasValue ? a.StartDateAired.Value.Month : 0)).ToString()
         });
 
         var total = await records.CountAsync(cancellationToken);
