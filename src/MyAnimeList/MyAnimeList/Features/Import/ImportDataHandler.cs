@@ -38,6 +38,8 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         _context.AnimeScores.RemoveRange(_context.AnimeScores.Select(a => a));
         _context.AnimeGenres.RemoveRange(_context.AnimeGenres.Select(a => a));
         _context.Genres.RemoveRange( _context.Genres.Select(a => a));
+        _context.AnimeProducers.RemoveRange(_context.AnimeProducers.Select(a => a));
+        _context.Producers.RemoveRange(_context.Producers.Select(a => a));
         _context.Animes.RemoveRange( _context.Animes.Select(a => a));
         _context.AnimesWithSynopsis.RemoveRange( _context.AnimesWithSynopsis.Select(a => a));
         _context.RatingCompletes.RemoveRange( _context.RatingCompletes.Select(a => a));
@@ -70,6 +72,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
             IEnumerable<AnimeRaw> records = csv.GetRecords<AnimeRaw>();
 
             List<Genre> genres = new();
+            List<Producer> producers = new();
 
             foreach (var record in records)
             {
@@ -101,6 +104,38 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
                             _context.AnimeGenres.Add(new AnimeGenres()
                             {
                                 Genre = genre,
+                                Anime = anime
+                            });
+                        }
+                    }
+                }
+
+                if (record.Producers != null)
+                {
+                    foreach (string producerSplited in record.Producers.Split(',').Select(d => d.Trim()))
+                    {
+                        if(!producers.Any(g => g.Name == producerSplited))
+                        {
+                            var newProducer = new Producer() { Name = producerSplited };
+
+                            producers.Add(newProducer);
+
+                            _context.Producers.Add(newProducer);
+
+                            _context.AnimeProducers.Add(new AnimeProducer()
+                            {
+                                Producer = newProducer,
+                                Anime = anime
+                            });
+                        }
+
+                        else
+                        {
+                            var producer = producers.FirstOrDefault(g => g.Name == producerSplited);
+
+                            _context.AnimeProducers.Add(new AnimeProducer()
+                            {
+                                Producer = producer,
                                 Anime = anime
                             });
                         }

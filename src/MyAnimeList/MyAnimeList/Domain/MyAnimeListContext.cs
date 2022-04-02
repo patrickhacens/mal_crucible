@@ -22,6 +22,8 @@ public class MyAnimeListContext : DbContext
 
     public DbSet<AnimeGenres> AnimeGenres { get; set; }
     public DbSet<Genre> Genres { get; set; }
+    public DbSet<Producer> Producers { get; set; }
+    public DbSet<AnimeProducer> AnimeProducers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
