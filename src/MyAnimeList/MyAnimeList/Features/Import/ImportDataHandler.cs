@@ -39,6 +39,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         _context.AnimeScores.RemoveRange(_context.AnimeScores.Select(a => a));
         _context.AnimeGenres.RemoveRange(_context.AnimeGenres.Select(a => a));
         _context.Genres.RemoveRange(_context.Genres.Select(a => a));
+        _context.Studios.RemoveRange(_context.Studios.Select(a => a));
         _context.Animes.RemoveRange(_context.Animes.Select(a => a));
         _context.AnimesWithSynopsis.RemoveRange(_context.AnimesWithSynopsis.Select(a => a));
         _context.RatingCompletes.RemoveRange(_context.RatingCompletes.Select(a => a));
