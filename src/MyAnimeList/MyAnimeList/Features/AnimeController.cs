@@ -11,6 +11,7 @@ using Nudes.Paginator.Core;
 using Nudes.Retornator.Core;
 using MyAnimeList.Features.EngagingPerAnime;
 using MyAnimeList.Features.ViewsPerGenre;
+using MyAnimeList.Features.ViewsPerProducer;
 
 namespace MyAnimeList
 {
@@ -43,6 +44,12 @@ namespace MyAnimeList
 
         [HttpGet("/animes/engaging")]
         public Task<ResultOf<PageResult<EngagingPerAnimeDTO>>> EngagingPerAnime([FromQuery] EngagingPerAnimeRequest request, CancellationToken cancellationToken)
+        {
+            return _mediator.Send(request, cancellationToken);
+        }
+
+        [HttpGet("/animes/producer/views")]
+        public Task<ResultOf<List<ViewsPerProducerDTO>>> ViewsPErPRoducer([FromQuery] ViewsPerProducerRequest request, CancellationToken cancellationToken)
         {
             return _mediator.Send(request, cancellationToken);
         }

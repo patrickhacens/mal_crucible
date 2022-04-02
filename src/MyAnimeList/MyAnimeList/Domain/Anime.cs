@@ -12,7 +12,6 @@ public class Anime
     public int? Episodes { get; set; }   
     public string Aired { get; set; }   
     public string Premiered { get; set; }   
-    public string Producers { get; set; }
     public string Licensors { get; set; }
     public string Studios { get; set; }
     public string Source { get; set; }  
@@ -39,4 +38,5 @@ public class Anime
     public double? Score01 { get; set; }
     public virtual List<AnimeGenres> AnimeGenres { get; set; }
     public virtual List<AnimeScore> AnimeScores { get; set; }
+    public virtual List<AnimeProducer> AnimeProducers { get; set;}
 }
