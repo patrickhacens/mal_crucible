@@ -168,8 +168,8 @@ namespace MyAnimeList.Migrations
                     b.Property<int>("AnimeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProducerId")
-                        .HasColumnType("int");
+                    b.Property<string>("ProducerId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -273,16 +273,10 @@ namespace MyAnimeList.Migrations
 
             modelBuilder.Entity("MyAnimeList.Domain.Producer", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Name");
 
                     b.ToTable("Producers");
                 });
@@ -349,12 +343,39 @@ namespace MyAnimeList.Migrations
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("MyAnimeList.Domain.AnimeProducer", b =>
+                {
+                    b.HasOne("MyAnimeList.Domain.Anime", "Anime")
+                        .WithMany("AnimeProducers")
+                        .HasForeignKey("AnimeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyAnimeList.Domain.Producer", "Producer")
+                        .WithMany("Producers")
+                        .HasForeignKey("ProducerId");
+
+                    b.Navigation("Anime");
+
+                    b.Navigation("Producer");
+                });
+
+            modelBuilder.Entity("MyAnimeList.Domain.AnimeScore", b =>
+                {
+                    b.HasOne("MyAnimeList.Domain.Anime", "Anime")
+                        .WithMany("AnimeScores")
+                        .HasForeignKey("MyAnimeListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Anime");
+                });
+
             modelBuilder.Entity("MyAnimeList.Domain.AnimeStudio", b =>
                 {
                     b.HasOne("MyAnimeList.Domain.Anime", "Anime")
                         .WithMany("AnimeStudios")
                         .HasForeignKey("AnimeId")
-                        .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -371,57 +392,11 @@ namespace MyAnimeList.Migrations
                 {
                     b.Navigation("AnimeGenres");
 
-                    b.Navigation("AnimeStudios");
-                });
-
-            modelBuilder.Entity("MyAnimeList.Domain.Genre", b =>
-                {
-                    b.Navigation("AnimeGenres");
-                });
-
-            modelBuilder.Entity("MyAnimeList.Domain.Studio", b =>
-                {
-                    b.Navigation("AnimeStudios");
-                });
-
-            modelBuilder.Entity("MyAnimeList.Domain.AnimeProducer", b =>
-                {
-                    b.HasOne("MyAnimeList.Domain.Anime", "Anime")
-                        .WithMany("AnimeProducers")
-                        .HasForeignKey("AnimeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MyAnimeList.Domain.Producer", "Producer")
-                        .WithMany("Producers")
-                        .HasForeignKey("ProducerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Anime");
-
-                    b.Navigation("Producer");
-                });
-
-            modelBuilder.Entity("MyAnimeList.Domain.AnimeScore", b =>
-                {
-                    b.HasOne("MyAnimeList.Domain.Anime", "Anime")
-                        .WithMany("AnimeScores")
-                        .HasForeignKey("MyAnimeListId")
-                        .HasPrincipalKey("MyAnimeListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Anime");
-                });
-
-            modelBuilder.Entity("MyAnimeList.Domain.Anime", b =>
-                {
-                    b.Navigation("AnimeGenres");
-
                     b.Navigation("AnimeProducers");
 
                     b.Navigation("AnimeScores");
+
+                    b.Navigation("AnimeStudios");
                 });
 
             modelBuilder.Entity("MyAnimeList.Domain.Genre", b =>
@@ -434,6 +409,11 @@ namespace MyAnimeList.Migrations
                     b.Navigation("Producers");
                 });
 
+            modelBuilder.Entity("MyAnimeList.Domain.Studio", b =>
+                {
+                    b.Navigation("AnimeStudios");
+                });
+#pragma warning restore 612, 618
         }
     }
 }

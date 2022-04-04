@@ -46,6 +46,9 @@ public class MyAnimeListContext : DbContext
         modelBuilder.Entity<Studio>()
             .HasKey(p => p.StudioName);
 
+        modelBuilder.Entity<Producer>()
+            .HasKey(p => p.Name);
+
         modelBuilder.Entity<AnimeStudio>()
             .HasOne(p => p.Studio)
             .WithMany(b => b.AnimeStudios)

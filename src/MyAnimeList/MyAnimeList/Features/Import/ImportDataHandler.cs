@@ -140,9 +140,6 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
                 _context.Animes.Add(anime);
             }
 
-
-
-
             #region NewStudio
 
             
@@ -179,16 +176,13 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
 
             #region genres
 
-
             var data2 = records
                         .Where(x => x.Genres != null)
                         .Select(x => new
                         {
-
                             Genres = x.Genres,
                             MyAnimeListId = x.MyAnimeListId
                         });
-
             var datadistinct = data2
                 .Select(x => x.Genres.Split(","))
                 .SelectMany(y => y)
@@ -200,7 +194,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
                 .ToArray();
             _context.Genres.AddRange(datadistinct);
 
-            var genresstudios = from x in _context.Genres.Local.ToList()
+            var genresanimes = from x in _context.Genres.Local.ToList()
                                 from y in data2.Where(h => h.Genres.Contains(x.Name))
                                 select new AnimeGenres
                                 {
@@ -208,48 +202,45 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
                                     AnimeId = y.MyAnimeListId
                                 };
 
-            _context.AnimeGenres.AddRange(genresstudios);
+            _context.AnimeGenres.AddRange(genresanimes);
+
+            #endregion
+
+            #region producers
+            var dataproducers = records
+                                .Where(x => x.Producers != null)
+                                .Select(x => new
+                                {
+                                    Producers = x.Producers,
+                                    MyAnimeListId = x.MyAnimeListId
+                                });
+            var producersdistinct = dataproducers
+                                    .Select(x => x.Producers.Split(","))
+                                    .SelectMany(y => y)
+                                    .Distinct()
+                                    .Select(x => new Producer()
+                                    {
+                                        Name = x
+                                    })
+                                    .ToArray();
+
+            _context.Producers.AddRange(producersdistinct);
+
+            var produceranime = from x in _context.Producers.Local.ToList()
+                                from y in dataproducers.Where(h => h.Producers.Contains(x.Name))
+                                select new AnimeProducer()
+                                {
+                                    AnimeId = y.MyAnimeListId,
+                                     ProducerId = x.Name
+                                };
+            _context.AnimeProducers.AddRange(produceranime);
+            #endregion
 
 
-
-
-
-                if (record.Producers != null)
-                {
-                    foreach (string producerSplited in record.Producers.Split(',').Select(d => d.Trim()))
-                    {
-                        if(!producers.Any(g => g.Name == producerSplited))
-                        {
-                            var newProducer = new Producer() { Name = producerSplited };
-
-                            producers.Add(newProducer);
-
-                            _context.Producers.Add(newProducer);
-
-                            _context.AnimeProducers.Add(new AnimeProducer()
-                            {
-                                Producer = newProducer,
-                                Anime = anime
-                            });
-                        }
-
-                        else
-                        {
-                            var producer = producers.FirstOrDefault(g => g.Name == producerSplited);
-
-                            _context.AnimeProducers.Add(new AnimeProducer()
-                            {
-                                Producer = producer,
-                                Anime = anime
-                            });
-                        }
-                    }
-                }
-            }
 
         }
         #endregion
-        #endregion
+
 
         #region AnimeWithSynopsis
         using (var reader = new StreamReader(Path.Combine(path, "anime_with_synopsis.csv"), Encoding.UTF8))

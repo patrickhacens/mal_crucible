@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MyAnimeList.Migrations
 {
-    public partial class AnimeprimarykeyisMyAnimeList : Migration
+    public partial class AllIdsfixed : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -19,6 +19,10 @@ namespace MyAnimeList.Migrations
 
             migrationBuilder.DropColumn(
                 name: "Genres",
+                table: "Animes");
+
+            migrationBuilder.DropColumn(
+                name: "Producers",
                 table: "Animes");
 
             migrationBuilder.AddColumn<DateTime>(
@@ -47,6 +51,17 @@ namespace MyAnimeList.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genres", x => x.Name);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Producers",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Producers", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -86,6 +101,31 @@ namespace MyAnimeList.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AnimeProducers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AnimeId = table.Column<int>(type: "int", nullable: false),
+                    ProducerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnimeProducers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AnimeProducers_Animes_AnimeId",
+                        column: x => x.AnimeId,
+                        principalTable: "Animes",
+                        principalColumn: "MyAnimeListId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AnimeProducers_Producers_ProducerId",
+                        column: x => x.ProducerId,
+                        principalTable: "Producers",
+                        principalColumn: "Name");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AnimesStudios",
                 columns: table => new
                 {
@@ -111,6 +151,11 @@ namespace MyAnimeList.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AnimeScores_MyAnimeListId",
+                table: "AnimeScores",
+                column: "MyAnimeListId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AnimeGenres_AnimeId",
                 table: "AnimeGenres",
                 column: "AnimeId");
@@ -121,6 +166,16 @@ namespace MyAnimeList.Migrations
                 column: "GenreName");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AnimeProducers_AnimeId",
+                table: "AnimeProducers",
+                column: "AnimeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnimeProducers_ProducerId",
+                table: "AnimeProducers",
+                column: "ProducerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AnimesStudios_AnimeId",
                 table: "AnimesStudios",
                 column: "AnimeId");
@@ -129,12 +184,27 @@ namespace MyAnimeList.Migrations
                 name: "IX_AnimesStudios_StudioId",
                 table: "AnimesStudios",
                 column: "StudioId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AnimeScores_Animes_MyAnimeListId",
+                table: "AnimeScores",
+                column: "MyAnimeListId",
+                principalTable: "Animes",
+                principalColumn: "MyAnimeListId",
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_AnimeScores_Animes_MyAnimeListId",
+                table: "AnimeScores");
+
             migrationBuilder.DropTable(
                 name: "AnimeGenres");
+
+            migrationBuilder.DropTable(
+                name: "AnimeProducers");
 
             migrationBuilder.DropTable(
                 name: "AnimesStudios");
@@ -143,7 +213,14 @@ namespace MyAnimeList.Migrations
                 name: "Genres");
 
             migrationBuilder.DropTable(
+                name: "Producers");
+
+            migrationBuilder.DropTable(
                 name: "Studios");
+
+            migrationBuilder.DropIndex(
+                name: "IX_AnimeScores_MyAnimeListId",
+                table: "AnimeScores");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_Animes",
@@ -167,6 +244,12 @@ namespace MyAnimeList.Migrations
 
             migrationBuilder.AddColumn<string>(
                 name: "Genres",
+                table: "Animes",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Producers",
                 table: "Animes",
                 type: "nvarchar(max)",
                 nullable: true);
