@@ -2,7 +2,6 @@
 
 public class Anime
 {
-    public int Id { get; set; }
     public int MyAnimeListId { get; set; }  
     public string Name { get; set; }
     public decimal? Score { get; set; }  
@@ -40,4 +39,6 @@ public class Anime
     public double? Score03 { get; set; }
     public double? Score02 { get; set; }
     public double? Score01 { get; set; }
+    public virtual List<AnimeStudio> AnimeStudios { get; set; }
+
 }

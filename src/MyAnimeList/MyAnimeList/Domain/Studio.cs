@@ -2,7 +2,6 @@
 
 public class Studio
 {
-    public int Id { get; set; }
-    public int MyAnimeListId { get; set; }
     public string StudioName { get; set; }
+    public virtual List<AnimeStudio> AnimeStudios { get; set; }
 }

@@ -24,11 +24,8 @@ namespace MyAnimeList.Migrations
 
             modelBuilder.Entity("MyAnimeList.Domain.Anime", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("MyAnimeListId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Aired")
                         .HasColumnType("nvarchar(max)");
@@ -61,9 +58,6 @@ namespace MyAnimeList.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Members")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MyAnimeListId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -138,7 +132,7 @@ namespace MyAnimeList.Migrations
                     b.Property<int?>("Watching")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("MyAnimeListId");
 
                     b.ToTable("Animes");
                 });
@@ -154,14 +148,14 @@ namespace MyAnimeList.Migrations
                     b.Property<int>("AnimeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
+                    b.Property<string>("GenreName")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AnimeId");
 
-                    b.HasIndex("GenreId");
+                    b.HasIndex("GenreName");
 
                     b.ToTable("AnimeGenres");
                 });
@@ -194,6 +188,29 @@ namespace MyAnimeList.Migrations
                     b.ToTable("AnimeScores");
                 });
 
+            modelBuilder.Entity("MyAnimeList.Domain.AnimeStudio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AnimeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StudioId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnimeId");
+
+                    b.HasIndex("StudioId");
+
+                    b.ToTable("AnimesStudios");
+                });
+
             modelBuilder.Entity("MyAnimeList.Domain.AnimeWithSynopsis", b =>
                 {
                     b.Property<int>("Id")
@@ -224,16 +241,10 @@ namespace MyAnimeList.Migrations
 
             modelBuilder.Entity("MyAnimeList.Domain.Genre", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Name");
 
                     b.ToTable("Genres");
                 });
@@ -262,19 +273,10 @@ namespace MyAnimeList.Migrations
 
             modelBuilder.Entity("MyAnimeList.Domain.Studio", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("MyAnimeListId")
-                        .HasColumnType("int");
-
                     b.Property<string>("StudioName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.HasKey("StudioName");
 
                     b.ToTable("Studios");
                 });
@@ -302,23 +304,45 @@ namespace MyAnimeList.Migrations
 
                     b.HasOne("MyAnimeList.Domain.Genre", "Genre")
                         .WithMany("AnimeGenres")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GenreName");
 
                     b.Navigation("Anime");
 
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("MyAnimeList.Domain.AnimeStudio", b =>
+                {
+                    b.HasOne("MyAnimeList.Domain.Anime", "Anime")
+                        .WithMany("AnimeStudios")
+                        .HasForeignKey("AnimeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyAnimeList.Domain.Studio", "Studio")
+                        .WithMany("AnimeStudios")
+                        .HasForeignKey("StudioId");
+
+                    b.Navigation("Anime");
+
+                    b.Navigation("Studio");
+                });
+
             modelBuilder.Entity("MyAnimeList.Domain.Anime", b =>
                 {
                     b.Navigation("AnimeGenres");
+
+                    b.Navigation("AnimeStudios");
                 });
 
             modelBuilder.Entity("MyAnimeList.Domain.Genre", b =>
                 {
                     b.Navigation("AnimeGenres");
+                });
+
+            modelBuilder.Entity("MyAnimeList.Domain.Studio", b =>
+                {
+                    b.Navigation("AnimeStudios");
                 });
 #pragma warning restore 612, 618
         }
