@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using MyAnimeList.Features.AnimesPerGenre;
@@ -7,7 +7,13 @@ using MyAnimeList.Models;
 
 using Nudes.Paginator.Core;
 using Nudes.Retornator.Core;
+
 using MyAnimeList.Features.QtdStudioPeriod;
+
+using MyAnimeList.Features.EngagingPerAnime;
+using MyAnimeList.Features.ViewsPerGenre;
+using MyAnimeList.Features.ViewsPerProducer;
+
 
 namespace MyAnimeList
 {
@@ -32,9 +38,28 @@ namespace MyAnimeList
             return _mediator.Send(request, cancellationToken);
         }
 
+
         [HttpGet]
         [Route("/animes/studio/releases")]
         public Task<ResultOf<PageResult<AnimePerStudioPeriod>>> AnimeStudioRelease([FromQuery] QtdStudioPeriodRequest request, CancellationToken cancellation)
             => _mediator.Send(request, cancellation);
+
+        [HttpGet("/animes/genre/views")]
+        public Task<ResultOf<List<ViewPerGenreDTO>>> ViewsPerGenres([FromQuery] ViewsPerGenreRequest request, CancellationToken cancellationToken)
+        {
+            return _mediator.Send(request, cancellationToken);
+        }
+
+        [HttpGet("/animes/engaging")]
+        public Task<ResultOf<PageResult<EngagingPerAnimeDTO>>> EngagingPerAnime([FromQuery] EngagingPerAnimeRequest request, CancellationToken cancellationToken)
+        {
+            return _mediator.Send(request, cancellationToken);
+        }
+
+        [HttpGet("/animes/producer/views")]
+        public Task<ResultOf<List<ViewsPerProducerDTO>>> ViewsPErPRoducer([FromQuery] ViewsPerProducerRequest request, CancellationToken cancellationToken)
+        {
+            return _mediator.Send(request, cancellationToken);
+        }
     }
 }

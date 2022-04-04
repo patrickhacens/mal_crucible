@@ -1,4 +1,4 @@
-﻿using CsvHelper;
+using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -22,6 +22,8 @@ public class MyAnimeListContext : DbContext
 
     public DbSet<AnimeGenres> AnimeGenres { get; set; }
     public DbSet<Genre> Genres { get; set; }
+    public DbSet<Producer> Producers { get; set; }
+    public DbSet<AnimeProducer> AnimeProducers { get; set; }
 
     public DbSet<Studio> Studios { get; set; }
     public DbSet<AnimeStudio> AnimesStudios { get; set; }
@@ -30,7 +32,6 @@ public class MyAnimeListContext : DbContext
         modelBuilder.Entity<WatchStatus>()
             .Property(a => a.Id)
             .ValueGeneratedNever();
-
 
         modelBuilder.Entity<Anime>()
             .HasKey(p => p.MyAnimeListId);
@@ -55,5 +56,10 @@ public class MyAnimeListContext : DbContext
             .WithMany(b => b.AnimeStudios)
             .HasPrincipalKey(p => p.MyAnimeListId);
 
+        modelBuilder.Entity<Anime>()
+            .HasMany(d => d.AnimeScores)
+            .WithOne(d => d.Anime)
+            .HasForeignKey(d => d.MyAnimeListId)
+            .HasPrincipalKey(d => d.MyAnimeListId);
     }
 }
