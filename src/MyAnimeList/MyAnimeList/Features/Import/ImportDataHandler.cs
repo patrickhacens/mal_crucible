@@ -36,25 +36,19 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         }
 
         #region CleanDb
+        _context.Animes.RemoveRange(_context.Animes.Select(a => a));
+
         _context.AnimeScores.RemoveRange(_context.AnimeScores.Select(a => a));
         _context.AnimeGenres.RemoveRange(_context.AnimeGenres.Select(a => a));
+        _context.AnimeProducers.RemoveRange(_context.AnimeProducers.Select(a => a));
 
         _context.Genres.RemoveRange(_context.Genres.Select(a => a));
         _context.Studios.RemoveRange(_context.Studios.Select(a => a));
-        _context.Animes.RemoveRange(_context.Animes.Select(a => a));
+        _context.Producers.RemoveRange(_context.Producers.Select(a => a));
+
         _context.AnimesWithSynopsis.RemoveRange(_context.AnimesWithSynopsis.Select(a => a));
         _context.RatingCompletes.RemoveRange(_context.RatingCompletes.Select(a => a));
         _context.WatchStatus.RemoveRange(_context.WatchStatus.Select(a => a));
-
-        _context.Genres.RemoveRange( _context.Genres.Select(a => a));
-        _context.AnimeProducers.RemoveRange(_context.AnimeProducers.Select(a => a));
-        _context.Producers.RemoveRange(_context.Producers.Select(a => a));
-        _context.Animes.RemoveRange( _context.Animes.Select(a => a));
-        _context.AnimesWithSynopsis.RemoveRange( _context.AnimesWithSynopsis.Select(a => a));
-        _context.RatingCompletes.RemoveRange( _context.RatingCompletes.Select(a => a));
-        _context.WatchStatus.RemoveRange( _context.WatchStatus.Select(a => a));
-
-        await _context.SaveChangesAsync(cancellationToken);
         #endregion
 
 
