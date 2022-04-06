@@ -12,8 +12,8 @@ using MyAnimeList.Domain;
 namespace MyAnimeList.Migrations
 {
     [DbContext(typeof(MyAnimeListContext))]
-    [Migration("20220404174002_All Ids fixed")]
-    partial class AllIdsfixed
+    [Migration("20220406162645_Main_Migration")]
+    partial class Main_Migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
