@@ -36,11 +36,12 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         }
 
         #region CleanDb
-        _context.Animes.RemoveRange(_context.Animes.Select(a => a));
 
         _context.AnimeScores.RemoveRange(_context.AnimeScores.Select(a => a));
         _context.AnimeGenres.RemoveRange(_context.AnimeGenres.Select(a => a));
         _context.AnimeProducers.RemoveRange(_context.AnimeProducers.Select(a => a));
+
+        _context.Animes.RemoveRange(_context.Animes.Select(a => a));
 
         _context.Genres.RemoveRange(_context.Genres.Select(a => a));
         _context.Studios.RemoveRange(_context.Studios.Select(a => a));
@@ -142,10 +143,11 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
                       .Where(x => x.Studios != null)
                       .Select(x => x.Studios.Split(",").Select(d => d.ToUpper()))
                       .SelectMany(d => d)
+                      .Select(a => a.Trim())
                       .Distinct()
                       .Select(x => new Studio()
                       {
-                          StudioName = x
+                          StudioName = x.Trim()
                       })
                       .ToArray();
             _context.Studios.AddRange(normalizedData);
@@ -180,10 +182,11 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
             var datadistinct = data2
                 .Select(x => x.Genres.Split(","))
                 .SelectMany(y => y)
+                .Select(a => a.Trim())
                 .Distinct()
                 .Select(x => new Genre()
                 {
-                    Name = x
+                    Name = x.Trim()
                 })
                 .ToArray();
             _context.Genres.AddRange(datadistinct);
@@ -211,10 +214,11 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
             var producersdistinct = dataproducers
                                     .Select(x => x.Producers.Split(","))
                                     .SelectMany(y => y)
+                                    .Select(a => a.Trim())
                                     .Distinct()
                                     .Select(x => new Producer()
                                     {
-                                        Name = x
+                                        Name = x.Trim()
                                     })
                                     .ToArray();
 
@@ -225,7 +229,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
                                 select new AnimeProducer()
                                 {
                                     AnimeId = y.MyAnimeListId,
-                                     ProducerId = x.Name
+                                    ProducerId = x.Name
                                 };
             _context.AnimeProducers.AddRange(produceranime);
             #endregion
