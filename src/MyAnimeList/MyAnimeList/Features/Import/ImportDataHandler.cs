@@ -1,4 +1,4 @@
-﻿using CsvHelper;
+using CsvHelper;
 using CsvHelper.Configuration;
 using MediatR;
 using MyAnimeList.Domain;
@@ -6,6 +6,7 @@ using MyAnimeList.Domain.CsvDomain;
 using Nudes.Retornator.Core;
 using System.Text;
 using Mapster;
+using System.Text.RegularExpressions;
 
 namespace MyAnimeList.Features.Import;
 
@@ -25,8 +26,8 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         var path = request.PathToRawFolder;
 
 
-        if (!File.Exists(Path.Combine(request.PathToRawFolder,"animelist.csv"))
-            || !File.Exists(Path.Combine(request.PathToRawFolder,"anime.csv"))
+        if (!File.Exists(Path.Combine(request.PathToRawFolder, "animelist.csv"))
+            || !File.Exists(Path.Combine(request.PathToRawFolder, "anime.csv"))
             || !File.Exists(Path.Combine(request.PathToRawFolder, "anime_with_synopsis.csv"))
             || !File.Exists(Path.Combine(request.PathToRawFolder, "rating_complete.csv"))
             || !File.Exists(Path.Combine(request.PathToRawFolder, "watching_status.csv")))
@@ -35,17 +36,22 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         }
 
         #region CleanDb
+        _context.Animes.RemoveRange(_context.Animes.Select(a => a));
+
         _context.AnimeScores.RemoveRange(_context.AnimeScores.Select(a => a));
         _context.AnimeGenres.RemoveRange(_context.AnimeGenres.Select(a => a));
-        _context.Genres.RemoveRange( _context.Genres.Select(a => a));
         _context.AnimeProducers.RemoveRange(_context.AnimeProducers.Select(a => a));
+
+        _context.Genres.RemoveRange(_context.Genres.Select(a => a));
+        _context.Studios.RemoveRange(_context.Studios.Select(a => a));
         _context.Producers.RemoveRange(_context.Producers.Select(a => a));
-        _context.Animes.RemoveRange( _context.Animes.Select(a => a));
-        _context.AnimesWithSynopsis.RemoveRange( _context.AnimesWithSynopsis.Select(a => a));
-        _context.RatingCompletes.RemoveRange( _context.RatingCompletes.Select(a => a));
-        _context.WatchStatus.RemoveRange( _context.WatchStatus.Select(a => a));
-        await _context.SaveChangesAsync(cancellationToken);
+
+        _context.AnimesWithSynopsis.RemoveRange(_context.AnimesWithSynopsis.Select(a => a));
+        _context.RatingCompletes.RemoveRange(_context.RatingCompletes.Select(a => a));
+        _context.WatchStatus.RemoveRange(_context.WatchStatus.Select(a => a));
         #endregion
+
+
 
         #region AnimeScores
         using (var reader = new StreamReader(Path.Combine(path, "animelist.csv"), Encoding.UTF8))
@@ -65,88 +71,173 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #endregion
 
         #region Animes
-        using (var reader = new StreamReader(Path.Combine(path,"anime.csv"), Encoding.UTF8))
+        using (var reader = new StreamReader(Path.Combine(path, "anime.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AnimeMap>();
-            IEnumerable<AnimeRaw> records = csv.GetRecords<AnimeRaw>();
+            List<AnimeRaw> records = csv.GetRecords<AnimeRaw>().ToList();
 
-            List<Genre> genres = new();
+            var dateregex = new Regex(@"(?i)^\s*(?<month>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*[\.,\s]*\D*(?:(?<day>\d{1,2})\D)*[\.,\s]*\D*(?<year>\d{4})(?:\s*to\s*(?<monthto>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)*[\.,\s]*(?:(?<dayto>\d{1,2})\D)*\D*(?<yearto>\d{4})*)*");
+            Dictionary<string, int> monthmap = new Dictionary<string, int>()
+                {
+                    {"jan", 1 },
+                    {"feb", 2 },
+                    {"mar", 3 },
+                    {"apr", 4 },
+                    {"may", 5 },
+                    {"jun", 6 },
+                    {"jul", 7 },
+                    {"aug", 8 },
+                    {"sep", 9 },
+                    {"oct", 10 },
+                    {"nov", 11 },
+                    {"dec", 12 }
+                };
+
+
+
             List<Producer> producers = new();
+
 
             foreach (var record in records)
             {
                 var anime = record.Adapt<Anime>();
+
+
+                #region GetAiredDates
+                if (anime.Aired != null)
+                {
+                    Match mDates = dateregex.Match(anime.Aired);
+                    int month = monthmap[mDates.Groups["month"].Success ? mDates.Groups["month"].Value.ToLower() : "jan"];
+                    int day = mDates.Groups["day"].Success ? int.Parse(mDates.Groups["day"].Value) : 1;
+                    int year = int.Parse(mDates.Groups["year"].Value);
+                    anime.StartDateAired = new DateTime(year, month, day);
+
+                    if (mDates.Groups["yearto"].Success)
+                    {
+                        int monthto = monthmap[mDates.Groups["monthto"].Success ? mDates.Groups["monthto"].Value.ToLower() : "jan"];
+                        int dayto = mDates.Groups["dayto"].Success ? int.Parse(mDates.Groups["dayto"].Value) : 1;
+                        int yearto = int.Parse(mDates.Groups["yearto"].Value);
+                        anime.EndDateAired = new DateTime(yearto, monthto, dayto);
+                    }
+                    else
+                    {
+                        anime.EndDateAired = null;
+                    }
+                }
+                else
+                {
+                    anime.StartDateAired = null;
+                    anime.EndDateAired = null;
+                }
+                #endregion
                 _context.Animes.Add(anime);
-                if (record.Genres != null)
-                {
-                    foreach (string genreSplited in record.Genres.Split(',').Select(d => d.Trim()))
-                    {
-                        if(!genres.Any(g => g.Name == genreSplited))
-                        {
-                            var newGenre = new Genre() { Name = genreSplited };
-
-                            genres.Add(newGenre);
-
-                            _context.Genres.Add(newGenre);
-
-                            _context.AnimeGenres.Add(new AnimeGenres()
-                            {
-                                Genre = newGenre,
-                                Anime = anime
-                            });
-                        }
-
-                        else
-                        {
-                            var genre = genres.FirstOrDefault(g => g.Name == genreSplited);
-
-                            _context.AnimeGenres.Add(new AnimeGenres()
-                            {
-                                Genre = genre,
-                                Anime = anime
-                            });
-                        }
-                    }
-                }
-
-                if (record.Producers != null)
-                {
-                    foreach (string producerSplited in record.Producers.Split(',').Select(d => d.Trim()))
-                    {
-                        if(!producers.Any(g => g.Name == producerSplited))
-                        {
-                            var newProducer = new Producer() { Name = producerSplited };
-
-                            producers.Add(newProducer);
-
-                            _context.Producers.Add(newProducer);
-
-                            _context.AnimeProducers.Add(new AnimeProducer()
-                            {
-                                Producer = newProducer,
-                                Anime = anime
-                            });
-                        }
-
-                        else
-                        {
-                            var producer = producers.FirstOrDefault(g => g.Name == producerSplited);
-
-                            _context.AnimeProducers.Add(new AnimeProducer()
-                            {
-                                Producer = producer,
-                                Anime = anime
-                            });
-                        }
-                    }
-                }
             }
+
+            #region NewStudio
+
+            
+
+            var normalizedData = records
+                      .Where(x => x.Studios != null)
+                      .Select(x => x.Studios.Split(",").Select(d => d.ToUpper()))
+                      .SelectMany(d => d)
+                      .Distinct()
+                      .Select(x => new Studio()
+                      {
+                          StudioName = x
+                      })
+                      .ToArray();
+            _context.Studios.AddRange(normalizedData);
+
+            var data = records
+                      .Where(x => x.Studios != null)
+                      .Select(x => new {
+                          Studios = x.Studios,
+                          MyAnimeListId = x.MyAnimeListId
+                      }).ToArray();
+
+            var animestudios = from x in _context.Studios.Local.ToList()
+                               from y in data.Where(h => h.Studios.ToUpper().Contains(x.StudioName))
+                               select new AnimeStudio
+                               {
+                                   AnimeId = y.MyAnimeListId,
+                                   StudioId = x.StudioName
+                               };
+
+            _context.AnimesStudios.AddRange(animestudios);
+            #endregion
+
+            #region genres
+
+            var data2 = records
+                        .Where(x => x.Genres != null)
+                        .Select(x => new
+                        {
+                            Genres = x.Genres,
+                            MyAnimeListId = x.MyAnimeListId
+                        });
+            var datadistinct = data2
+                .Select(x => x.Genres.Split(","))
+                .SelectMany(y => y)
+                .Distinct()
+                .Select(x => new Genre()
+                {
+                    Name = x
+                })
+                .ToArray();
+            _context.Genres.AddRange(datadistinct);
+
+            var genresanimes = from x in _context.Genres.Local.ToList()
+                                from y in data2.Where(h => h.Genres.Contains(x.Name))
+                                select new AnimeGenres
+                                {
+                                    GenreName = x.Name,
+                                    AnimeId = y.MyAnimeListId
+                                };
+
+            _context.AnimeGenres.AddRange(genresanimes);
+
+            #endregion
+
+            #region producers
+            var dataproducers = records
+                                .Where(x => x.Producers != null)
+                                .Select(x => new
+                                {
+                                    Producers = x.Producers,
+                                    MyAnimeListId = x.MyAnimeListId
+                                });
+            var producersdistinct = dataproducers
+                                    .Select(x => x.Producers.Split(","))
+                                    .SelectMany(y => y)
+                                    .Distinct()
+                                    .Select(x => new Producer()
+                                    {
+                                        Name = x
+                                    })
+                                    .ToArray();
+
+            _context.Producers.AddRange(producersdistinct);
+
+            var produceranime = from x in _context.Producers.Local.ToList()
+                                from y in dataproducers.Where(h => h.Producers.Contains(x.Name))
+                                select new AnimeProducer()
+                                {
+                                    AnimeId = y.MyAnimeListId,
+                                     ProducerId = x.Name
+                                };
+            _context.AnimeProducers.AddRange(produceranime);
+            #endregion
+
+
+
         }
         #endregion
 
+
         #region AnimeWithSynopsis
-        using (var reader = new StreamReader(Path.Combine(path,"anime_with_synopsis.csv"), Encoding.UTF8))
+        using (var reader = new StreamReader(Path.Combine(path, "anime_with_synopsis.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<AnimeWithSynopsisMap>();
@@ -156,7 +247,7 @@ public class ImportDataHandler : IRequestHandler<ImportDataRequest, Result>
         #endregion
 
         #region RatingFromComplete
-        using (var reader = new StreamReader(Path.Combine(path,"rating_complete.csv"), Encoding.UTF8))
+        using (var reader = new StreamReader(Path.Combine(path, "rating_complete.csv"), Encoding.UTF8))
         using (var csv = new CsvReader(reader, config))
         {
             csv.Context.RegisterClassMap<RatingFromCompleteMap>();
