@@ -4,17 +4,17 @@ using MyAnimeList.Domain;
 using MyAnimeList.Models;
 using Nudes.Retornator.Core;
 
-namespace MyAnimeList.Features.ViewsPerProducer
+namespace MyAnimeList.Features.ViewsPerStudio
 {
-    public class ViewsPerProducerHandler : IRequestHandler<ViewsPerProducerRequest, ResultOf<List<ViewsPerProducerDTO>>>
+    public class ViewsPerStudioHandler : IRequestHandler<ViewsPerStudioRequest, ResultOf<List<ViewsPerStudioDTO>>>
     {
         private readonly MyAnimeListContext context;
 
-        public ViewsPerProducerHandler(MyAnimeListContext context)
+        public ViewsPerStudioHandler(MyAnimeListContext context)
         {
             this.context = context;
         }
-        public async Task<ResultOf<List<ViewsPerProducerDTO>>> Handle(ViewsPerProducerRequest request, CancellationToken cancellationToken)
+        public async Task<ResultOf<List<ViewsPerStudioDTO>>> Handle(ViewsPerStudioRequest request, CancellationToken cancellationToken)
         {
             return await context.Animes.Join(context.AnimeScores, a => a.MyAnimeListId, b => b.MyAnimeListId, (a, b) => new
             {
@@ -25,16 +25,16 @@ namespace MyAnimeList.Features.ViewsPerProducer
             {
                 MyAnimeListId = a.Key.MyAnimeListId,
                 Soma = a.Sum(a => a.WatchedEpisodes),
-            }).Join(context.AnimeProducers, a => a.MyAnimeListId, b => b.AnimeId, (a, b) => new
+            }).Join(context.AnimesStudios, a => a.MyAnimeListId, b => b.AnimeId, (a, b) => new
             {
-                Producer = context.Producers.Where(c => c.Name == b.ProducerId).Select(d => d.Name).First(),
+                Studio = context.Studios.Where(c => c.StudioName == b.StudioId).Select(d => d.StudioName).First(),
                 Soma = a.Soma
-            }).GroupBy(d => d.Producer)
-            .Select(a => new ViewsPerProducerDTO()
+            }).GroupBy(d => d.Studio)
+            .Select(a => new ViewsPerStudioDTO()
             {
-                ProducerName = a.Key,
+                StudioName = a.Key,
                 Views = a.Sum(a => a.Soma)
-            }).OrderBy(a => a.ProducerName).ToListAsync(cancellationToken);
+            }).OrderBy(a => a.StudioName).ToListAsync(cancellationToken);
         }
     }
 }
