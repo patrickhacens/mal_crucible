@@ -13,7 +13,7 @@ using MyAnimeList.Features.QtdStudioPeriod;
 using MyAnimeList.Features.EngagingPerAnime;
 using MyAnimeList.Features.ViewsPerGenre;
 using MyAnimeList.Features.ViewsPerProducer;
-
+using MyAnimeList.Features.AnimePerStudioPerPeriod;
 
 namespace MyAnimeList
 {
@@ -59,6 +59,13 @@ namespace MyAnimeList
         [HttpGet("/animes/producer/views")]
         public Task<ResultOf<List<ViewsPerProducerDTO>>> ViewsPErPRoducer([FromQuery] ViewsPerProducerRequest request, CancellationToken cancellationToken)
         {
+            return _mediator.Send(request, cancellationToken);
+        }
+
+        [HttpGet("/animes/studio/{StudioName}/releases")]
+        public Task<ResultOf<AnimesPerStudioPerPeriodDTO>> AnimesPerStudioPerPeriod([FromQuery] AnimesPerStudioPerPeriodRequest request, CancellationToken cancellationToken)
+        {
+            //request.StudioName = StudioName;
             return _mediator.Send(request, cancellationToken);
         }
     }
