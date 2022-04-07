@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         
-        public int GenreId { get; set; }
+        public string GenreName { get; set; }
         public virtual Genre Genre { get; set; }
 
         public int AnimeId { get; set; }

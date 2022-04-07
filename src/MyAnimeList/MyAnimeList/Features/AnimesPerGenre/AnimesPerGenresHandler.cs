@@ -16,7 +16,7 @@ namespace MyAnimeList.Features.AnimesPerGenre
         }
         public async Task<ResultOf<List<AnimesPerGenresDTO>>> Handle(AnimesPerGenresRequest request, CancellationToken cancellationToken)
         {
-            return await context.AnimeGenres.Include(d => d.Genre).GroupBy(d => d.GenreId).Select(d => new AnimesPerGenresDTO()
+            return await context.AnimeGenres.Include(d => d.Genre).GroupBy(d => d.GenreName).Select(d => new AnimesPerGenresDTO()
             {
                 Genre = d.First().Genre.Name,
                 Quantity = d.Count()

@@ -1,8 +1,7 @@
-﻿namespace MyAnimeList.Domain;
+namespace MyAnimeList.Domain;
 
 public class Anime
 {
-    public int Id { get; set; }
     public int MyAnimeListId { get; set; }  
     public string Name { get; set; }
     public decimal? Score { get; set; }  
@@ -10,6 +9,8 @@ public class Anime
     public string JapaneseName { get; set; }    
     public string Type { get; set; }    
     public int? Episodes { get; set; }   
+    public DateTime? StartDateAired { get; set; }
+    public DateTime? EndDateAired { get; set; }
     public string Aired { get; set; }   
     public string Premiered { get; set; }   
     public string Licensors { get; set; }
@@ -36,7 +37,10 @@ public class Anime
     public double? Score03 { get; set; }
     public double? Score02 { get; set; }
     public double? Score01 { get; set; }
+
+    public virtual List<AnimeStudio> AnimeStudios { get; set; }
     public virtual List<AnimeGenres> AnimeGenres { get; set; }
     public virtual List<AnimeScore> AnimeScores { get; set; }
     public virtual List<AnimeProducer> AnimeProducers { get; set;}
+
 }

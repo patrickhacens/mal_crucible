@@ -20,16 +20,14 @@ namespace MyAnimeList.Features.ViewsPerGenre
             {
                 MyAnimeListId = a.MyAnimeListId,
                 WatchedEpisodes = b.WatchedEpisodes,
-                Id = a.Id,
             }).GroupBy(a => new { a.MyAnimeListId })
             .Select(a => new
             {
                 MyAnimeListId = a.Key.MyAnimeListId,
                 Soma = a.Sum(a => a.WatchedEpisodes),
-                Id = a.Min(a => a.Id)
-            }).Join(_context.AnimeGenres, a => a.Id, b => b.AnimeId, (a, b) => new
+            }).Join(_context.AnimeGenres, a => a.MyAnimeListId, b => b.AnimeId, (a, b) => new
             {
-                Genre = _context.Genres.Where(c => c.Id == b.GenreId).Select(d => d.Name).First(),
+                Genre = _context.Genres.Where(c => c.Name == b.GenreName).Select(d => d.Name).First(),
                 Soma = a.Soma
             }).GroupBy(d => d.Genre)
             .Select(a => new ViewPerGenreDTO()
